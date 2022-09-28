@@ -522,11 +522,7 @@ class MemoryAgent(BaseAgent):
                                 skip_when = False,
                                 ):  # -> returns Iterator<Explanation>
         self.fails = [0, 0]
-        print('rhs list')
-        print(rhs_list)
         for rhs,match in self.all_where_parts(state,rhs_list):
-            print('in')
-            print(rhs)
             self.fails[0] += 1
             if(self.when_learner.state_format == "variablized_state"):
                 pred_state = state.get_view(("variablize", rhs, tuple(match)))
@@ -550,7 +546,6 @@ class MemoryAgent(BaseAgent):
                 skill_info = explanation.get_skill_info(self,pred_state)
             else:
                 skill_info = None
-            print('yield')
             yield explanation, skill_info
 
     def request(self, state: dict, add_skill_info=False, n=1, problem_info=None, **kwargs):  # -> Returns sai

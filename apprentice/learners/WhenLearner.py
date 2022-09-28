@@ -417,7 +417,7 @@ def export_tree(dt):
 from sklearn.tree import _tree
 class DecisionTree(DecisionTreeClassifier):
     def fit(self,X,y):
-        print(f'fit: {len(X)}')
+        # print(f'fit: {len(X)}')
         
         # print("X",len(X[0]))
         # pprint(X)
