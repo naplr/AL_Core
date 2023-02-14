@@ -95,6 +95,7 @@ class WhenLearner(object):
         # print("LEARNERS",self.sub_learners)
         
         if(self.cross_rhs_inference == "implicit_negatives"):
+            print("IMPLICIT NEGAtIVES")
             this_state = state.get_view(("variablize",rhs,tuple(mapping)))
             # pprint(this_state)
             if(self.type == "one_learner_per_label"):
@@ -128,7 +129,7 @@ class WhenLearner(object):
                 del self.implicit_examples[key]['state'][index_value]
                 del self.implicit_examples[key]['reward'][index_value]
 
-            print("MAIN:",str(rhs))
+            # print("MAIN:",str(rhs))
             self.sub_learners[key].fit(states+implicit_states,
                                    rewards+implicit_rewards)
 
@@ -147,7 +148,7 @@ class WhenLearner(object):
                 for other_key, other_impl_exs in self.implicit_examples.items():
                     
                     if(other_key != key):
-                        print("OTHER:",str(other_key))
+                        # print("OTHER:",str(other_key))
                         # print(other_key, key)
                         # Add implicit negative examples to any rhs that doesn't already have this state
                         # TODO: Do this for all bindings not just for the given state
@@ -833,6 +834,7 @@ class DecisionTree2(object):
         self.y.append(int(y) if not isinstance(y, tuple) else y)
         Y = np.asarray(self.y,dtype=np.int64)
 
+        print(f"IFIT, {self.impl}")
         self.fit(self.X,Y)
 
     def fit(self, X, Y):
@@ -858,6 +860,7 @@ class DecisionTree2(object):
         if(self.impl == "sklearn"):
             return self.dt.fit(X, Y)
         else:
+            print("FITT IN ELSE")
             tree_str = str(self.dt) if getattr(self.dt, "tree",None) is not None else ''
             # [n.split_on for n in self.dt.tree.nodes]
             inds = [int(x.split(" : (")[1].split(")")[0]) for x in re.findall(r'NODE.+',tree_str)]
@@ -867,13 +870,14 @@ class DecisionTree2(object):
             tree_condition_inds(self.dt.tree)
             # print(tree_str)
 
-            
             if(False):
                 ft_weights = self._gen_feature_weights()
                 print(json.dumps({ind: str(self.inverse[ind])+f"(w:{ft_weights[ind]:.2f})" for ind in inds},indent=2)[2:-2])
             else:
                 ft_weights = np.ones((X.shape[1]),dtype=np.float64)
+                print("FIT PP")
                 print(json.dumps({ind: str(self.inverse[ind]) for ind in inds},indent=2)[2:-2])
+                # print(self.dt)
             # print(json.dumps({ind: str(self.inverse[ind]) for ind in inds},indent=2)[2:-2])
             
 

@@ -39,7 +39,10 @@ def state_as_kb2(state,foci_of_attention=None):
 			new_nb_state[typ] = get_nb_substate(nb_state[typ],nb_foci)
 		nb_state = new_nb_state
 	kb = NBRT_KnowledgeBase()
+	# print("nb state")
 	# print(nb_state)
+	# print("nb state textfiled")
+	# print(nb_state['TextField'])
 	kb.declare(nb_state)
 	return kb
 
@@ -140,8 +143,8 @@ class NumbaPlanner(BasePlanner):
 		
 		#Try to find a solution by looking for a number, if that doesn't work treat as string				
 		operator_compositions = kb.how_search(operators,goal,search_depth=search_depth,max_solutions=100)
-		print('op compo')
-		print(operator_compositions)
+		# print('op_compo: ')
+		# print(operator_compositions)
 		if(len(operator_compositions) == 0 and isinstance(goal,(int,float,bool))):
 			operator_compositions = kb.how_search(operators,str_preserve_ints(goal),search_depth=search_depth,max_solutions=100)
 		out = []

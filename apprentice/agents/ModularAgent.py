@@ -365,6 +365,7 @@ class ModularAgent(BaseAgent):
         self.where_learner = get_where_learner(where_learner,
                                             **kwargs.get("where_args",{}))
         self.when_learner = get_when_learner(when_learner,
+                                            # **kwargs.get("when_args",{ "cross_rhs_inference": "implicit_negatives"}))
                                             **kwargs.get("when_args",{}))
         self.which_learner = get_which_learner(heuristic_learner,
                                                explanation_choice, **kwargs.get("which_args",{}))
@@ -450,6 +451,7 @@ class ModularAgent(BaseAgent):
                             add_skill_info=add_skill_info)
 
         responses = []
+        # print(len(list(explanations)))
         itr = itertools.islice(explanations, n) if n > 0 else iter(explanations)
         for explanation,skill_info in itr:
             print(f'explanation: {str(explanation)}')
@@ -463,12 +465,12 @@ class ModularAgent(BaseAgent):
 
         
         if(len(responses) == 0):
-            return EMPTY_RESPONSE
+            return EMPTY_RESPONSE, {}
         else:
             response = responses[0].copy()
             if(n != 1):
                 response['responses'] = responses
-            return response
+            return response, {}
             
 
     # ------------------------------TRAIN----------------------------------------
@@ -573,6 +575,7 @@ class ModularAgent(BaseAgent):
 
     def fit(self, explanations, state, reward):  # -> return None
         if(not isinstance(reward,list)): reward = [reward]*len(explanations)
+        # print(f"exp lens: {len(explanations)}")
         for exp,_reward in zip(explanations,reward):
             mapping = list(exp.mapping.values())
             # print(exp, mapping, 'rew:', _reward)
@@ -610,7 +613,7 @@ class ModularAgent(BaseAgent):
         if(rhs_id is not None and mapping is not None):
             # print("Reward: ", reward)
             explanations = [Explanation(self.rhs_list[rhs_id], mapping)]
-            # print("EX: ",str(explanations[0]))
+            print("RHSID-EX: ",str(explanations[0]))
         elif(sai is not None):
             # pprint(state.get_view("object"))
             # print("TO HOW")
@@ -652,7 +655,10 @@ class ModularAgent(BaseAgent):
             raise ValueError("Call to train missing SAI, or unique identifiers")
 
         explanations = list(explanations)
-        # print("FIT_A")
+        print(f"FIT_A:")
+        print(f"RHSID: {rhs_id}")
+        for e in explanations:
+            print(f"{e.rhs._id_num}, {str(e)}")
         self.fit(explanations, state, reward)
         if(self.ret_train_expl):
             out = []
@@ -661,7 +667,7 @@ class ModularAgent(BaseAgent):
                 if(add_skill_info): resp.update(exp.get_skill_info(self))
                 out.append(resp)
 
-            return out
+            return out, {}
 
     # ------------------------------CHECK--------------------------------------
 

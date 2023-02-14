@@ -299,7 +299,8 @@ class Explanation(object):
             when_info = None
         else:    
             # when_info = tuple(agent.when_learner.skill_info(self.rhs, when_state))
-            when_info = tree.export_text(agent.when_learner.skill_info(self.rhs, when_state))
+            # when_info = tree.export_text(agent.when_learner.skill_info(self.rhs, when_state))
+            when_info = "No when info"
         skill_info = {"when": when_info,
                     #   "where": agent.where_learner.skill_info(self.rhs),
                       "how": str(self.rhs.input_rule),

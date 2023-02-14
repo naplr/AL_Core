@@ -1,7 +1,10 @@
+from multiprocessing.sharedctypes import Value
 from numbert.operator import BaseOperator
 import math
 from numba import njit
 from .representation import numbalizer
+from .type_conv import float_to_str, str_to_int, int_to_str, str_to_float
+
 
 textfield = {
     "id" : "string",
@@ -307,7 +310,7 @@ class Pow(BaseOperator):
     # muted_exceptions = [OverflowError]
 
     def condition(x,y): 
-        return x < 10 and y < 10
+        return x < 20 and y < 10
         # return not(x > 15 and y > 15)
 
     def forward(x, y):
@@ -316,12 +319,116 @@ class Pow(BaseOperator):
 class Inverse(BaseOperator):
     signature = 'string(float)'
     nopython = False
+    muted_exceptions = [ValueError, OverflowError]
 
-    # signature = 'float(TextField)'
-    #     return float(x.value)
     def forward(x):
-        s = str(x)
+        s = int_to_str(int(x))
         return s[::-1]
 
         # x = int(x / 10) + ((x % 10) * 10)
         # return x
+
+class Concatenate2(BaseOperator):
+    signature = 'string(float,float)'
+    nopython = False
+    muted_exceptions = [ValueError]
+
+    def condition(x, y): 
+        try:
+            x = str_to_int(x)
+            y = str_to_int(y)
+        except:
+            return False
+        return True
+
+    def forward(x, y):
+        # return int_to_str(x) + '/' + int_to_str(y)
+        return int_to_str(int(x)) + '/' + int_to_str(int(y))
+
+# class Concatenate2(BaseOperator):
+#     signature = 'string(string,string)'
+
+#     def forward(x, y):
+#         return x + '/' + y
+
+class Division(BaseOperator):
+    signature = 'string(float,float)'
+    nopython = False
+    muted_exceptions = [ValueError]
+
+    def forward(x, y):
+        return int_to_str(int(x)) + '/' + int_to_str(int(y))
+
+class Multiplication(BaseOperator):
+    signature = 'string(float,float)'
+    nopython = False
+    muted_exceptions = [ValueError]
+
+    def forward(x, y):
+        return int_to_str(int(x)) + '*' + int_to_str(int(y))
+
+class Addition(BaseOperator):
+    signature = 'string(float,float)'
+    nopython = False
+    muted_exceptions = [ValueError]
+
+    def forward(x, y):
+        return int_to_str(int(x)) + '+' + int_to_str(int(y))
+
+class Powering(BaseOperator):
+    signature = 'string(float,float)'
+    nopython = False
+    muted_exceptions = [ValueError]
+
+    def forward(x, y):
+        return int_to_str(int(x)) + '^' + int_to_str(int(y))
+
+# class Division(BaseOperator):
+#     signature = 'string(float)'
+
+#     def forward(x):
+#         x = "/"
+#         return str(x)
+
+
+# class Multiplication(BaseOperator):
+#     signature = 'string(string)'
+#     nopython = False
+
+#     def forward(x):
+#         return "/"
+
+
+# class Concatenate3(BaseOperator):
+#     signature = 'string(float,string,float)'
+#     nopython = False
+#     muted_exceptions = [ValueError]
+
+#     def forward(x, y, z):
+#         return int_to_str(int(x)) + y + int_to_str(int(z))
+
+
+DIGITS_START = 48
+DIGITS_END = 58
+class Solve(BaseOperator):
+    signature = 'float(string)'
+    nopython=False
+    muted_exceptions = [ValueError, OverflowError]
+
+    def forward(x):
+        if '/' in x:
+            a, b = x.split('/')
+            return int((int(a) / int(b)))
+        elif '+' in x:
+            a, b = x.split('+')
+            return int((int(a) + int(b)))
+        elif '*' in x:
+            a, b = x.split('*')
+            return int((int(a) * int(b)))
+        elif '^' in x:
+            a, b = x.split('^')
+            return int((int(a) ** int(b)))
+        
+        raise ValueError
+        # return int_to_str(int((str_to_int(a) / str_to_int(b))))
+        # return str(int((int(a) / int(b))))

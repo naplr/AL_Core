@@ -375,8 +375,8 @@ class MemoryAgent(BaseAgent):
         self.where_learner = get_where_learner(where_learner,
                                             **kwargs.get("where_args",{}))
         self.when_learner = get_when_learner(when_learner,
-                                            # **kwargs.get("when_args",{}))
-                                            **kwargs.get("when_args",{ "cross_rhs_inference": "implicit_negatives"}))
+                                            **kwargs.get("when_args",{}))
+                                            # **kwargs.get("when_args",{ "cross_rhs_inference": "implicit_negatives"}))
         self.which_learner = get_which_learner(heuristic_learner,
                                                explanation_choice, **kwargs.get("which_args",{}))
 
@@ -574,6 +574,7 @@ class MemoryAgent(BaseAgent):
 
         applicable_explanations_count = 0
         skill_infos = []
+        fail_retrieval = False
         for explanation, skill_info in itr:
             agent_logger.debug("Skill Application: {} {}".format(explanation,explanation.rhs._id_num))
             if(explanation is not None):
@@ -583,6 +584,8 @@ class MemoryAgent(BaseAgent):
                     if str(explanation) in self.activations:
                         v, m, success = self._compute_retrieval(explanation)
                         if not success:
+                            print("FAIL RETRIEVAL!!!!")
+                            fail_retrieval = True
                             fail_reason = "RETRIEVAL"
                             continue
 
@@ -603,6 +606,7 @@ class MemoryAgent(BaseAgent):
                         response["mapping"] = explanation.mapping
                     retrieved_explanations.append(explanation)
                     responses.append(response)
+                    skill_infos.append(skill_info)
 
         if self.use_memory:
             retrieved_explanations.sort(reverse=True)
@@ -627,16 +631,17 @@ class MemoryAgent(BaseAgent):
 
         if self.use_memory:
             self.t += 1
-            info = {
-                # 'applicable_explanations_count': applicable_explanations_count,
-                'v': selected_v,
-                'm': selected_m,
-                'selected_skill': selected_skill,
-                'applicable_explanations_count': applicable_explanations_count,
-                'where': selected_skill_where_part,
-                # 'when': selected_skill_when_part
-                'when': "...",
-            }
+        info = {
+            # 'applicable_explanations_count': applicable_explanations_count,
+            'fail_retrieval': fail_retrieval,
+            'v': selected_v,
+            'm': selected_m,
+            'selected_skill': selected_skill,
+            'applicable_explanations_count': applicable_explanations_count,
+            'where': selected_skill_where_part,
+            # 'when': selected_skill_when_part
+            'when': "...",
+        }
 
         if response == EMPTY_RESPONSE:
             # info['where'] = info['applicable_explanations_count']
