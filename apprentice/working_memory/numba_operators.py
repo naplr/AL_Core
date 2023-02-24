@@ -5,6 +5,11 @@ from numba import njit
 from .representation import numbalizer
 from .type_conv import float_to_str, str_to_int, int_to_str, str_to_float
 
+node = {
+    "id": "string",
+    "parent" : "string",
+    "value" : "string",
+}
 
 textfield = {
     "id" : "string",
@@ -65,6 +70,7 @@ overlay_button = {
 }
 
 
+numbalizer.register_specification("Node",node)
 numbalizer.register_specification("TextField",textfield)
 numbalizer.register_specification("TextArea",textfield)
 numbalizer.register_specification("Button", button)

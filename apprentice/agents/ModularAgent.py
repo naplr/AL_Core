@@ -402,6 +402,8 @@ class ModularAgent(BaseAgent):
             rhs_list = self.rhs_list
 
         for rhs in rhs_list:
+            print(f"RHS - {rhs}:")
+            print(self.where_learner.learners[rhs])
             for match in self.where_learner.get_matches(rhs, state):
                 if(len(match) != len(set(match))):
                     continue
@@ -412,7 +414,7 @@ class ModularAgent(BaseAgent):
 
     def applicable_explanations(self, state, rhs_list=None,
                                 add_skill_info=False,
-                                skip_when = False,
+                                skip_when = True,
                                 ):  # -> returns Iterator<Explanation>
         for rhs,match in self.all_where_parts(state,rhs_list):
             if(self.when_learner.state_format == "variablized_state"):
@@ -446,12 +448,12 @@ class ModularAgent(BaseAgent):
         # state = self.planner.apply_featureset(state)
         rhs_list = self.which_learner.sort_by_heuristic(self.rhs_list, state)
 
+        print(f"RHS len: {len(rhs_list)}")
         explanations = self.applicable_explanations(
                             state, rhs_list=rhs_list,
                             add_skill_info=add_skill_info)
 
         responses = []
-        # print(len(list(explanations)))
         itr = itertools.islice(explanations, n) if n > 0 else iter(explanations)
         for explanation,skill_info in itr:
             print(f'explanation: {str(explanation)}')
@@ -613,7 +615,7 @@ class ModularAgent(BaseAgent):
         if(rhs_id is not None and mapping is not None):
             # print("Reward: ", reward)
             explanations = [Explanation(self.rhs_list[rhs_id], mapping)]
-            print("RHSID-EX: ",str(explanations[0]))
+            # print("RHSID-EX: ",str(explanations[0]))
         elif(sai is not None):
             # pprint(state.get_view("object"))
             # print("TO HOW")
@@ -655,10 +657,10 @@ class ModularAgent(BaseAgent):
             raise ValueError("Call to train missing SAI, or unique identifiers")
 
         explanations = list(explanations)
-        print(f"FIT_A:")
-        print(f"RHSID: {rhs_id}")
-        for e in explanations:
-            print(f"{e.rhs._id_num}, {str(e)}")
+        # print(f"FIT_A:")
+        # print(f"RHSID: {rhs_id}")
+        # for e in explanations:
+        #     print(f"{e.rhs._id_num}, {str(e)}")
         self.fit(explanations, state, reward)
         if(self.ret_train_expl):
             out = []

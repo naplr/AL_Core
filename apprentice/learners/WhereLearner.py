@@ -311,6 +311,7 @@ class MostSpecific(BaseILP):
 
         for t in self.tuples:
             mapping = {a: t[i] for i, a in enumerate(self.args)}
+            print(mapping)
             operator = Operator(tuple(('Rule',) + self.args),
                                 frozenset().union(self.constraints), [])
 
